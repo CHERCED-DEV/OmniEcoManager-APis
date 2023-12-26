@@ -19,7 +19,12 @@ import { StrapiPopulationService } from './main/core/helpers/strapi-population/s
     StaticModule,
   ],
   controllers: [AppController],
-  providers: [AppService, HttpHandlerService, CultureService, StrapiPopulationService],
+  providers: [
+    AppService,
+    HttpHandlerService,
+    CultureService,
+    StrapiPopulationService,
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

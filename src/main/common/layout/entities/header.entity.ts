@@ -1,5 +1,6 @@
+import { ImgsConfig } from 'src/main/shared/entities/strapi.actions';
 import {
-  ImgsConfig,
+  ButtonGeneralConfig,
   InputConfig,
   LinkConfig,
 } from '../../../shared/entities/entitys.interface';
@@ -7,17 +8,16 @@ import {
 interface AlertsConfig {
   main_text: string;
   label: string;
-  link: LinkConfig[];
+  link: LinkConfig;
 }
 
 interface SearchConfig {
   input: InputConfig;
-  button: string;
+  button: ButtonGeneralConfig;
 }
 
 export interface HeaderConfig {
   brand_logo: ImgsConfig;
   search: SearchConfig;
   alert: AlertsConfig[];
-  user_panel: LinkConfig[];
 }

@@ -1,8 +1,3 @@
-export interface ImgsConfig {
-  src: string;
-  alt: string;
-}
-
 export interface LinkConfig {
   href: string;
   label: string;
@@ -18,11 +13,12 @@ export interface InputConfig {
     | 'checkbox'
     | 'radio';
   placeholder: string;
-  value?: string | number | boolean;
+  label: string;
 }
 
 export interface ButtonGeneralConfig {
   label: string;
   type: 'button' | 'submit' | 'reset';
-  ariaLabel: string;
+  button_id: string;
+  button_class: 'primary' | 'secundary' | 'page';
 }

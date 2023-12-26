@@ -1,13 +1,13 @@
+import { ImgsConfig } from 'src/main/shared/entities/strapi.actions';
 import {
   ButtonGeneralConfig,
-  ImgsConfig,
   InputConfig,
   LinkConfig,
 } from '../../../shared/entities/entitys.interface';
 
 interface SocialMediaConfig {
   link: LinkConfig;
-  img: ImgsConfig;
+  image: ImgsConfig;
 }
 
 interface CopyrightConfig {

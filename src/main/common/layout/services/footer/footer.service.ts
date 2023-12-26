@@ -6,6 +6,7 @@ import { CultureService } from 'src/main/core/services/culture/culture.service';
 import { HttpsRequests } from 'src/main/core/types/enums/request.core.enum';
 import { footerDataEn, footerDataEs } from '../../data/footer/footer.data';
 import { FooterConfig } from '../../entities/footer.entity';
+import { StrapiPopulationService } from 'src/main/core/helpers/strapi-population/strapi-population.service';
 
 @Injectable()
 export class FooterService {
@@ -14,11 +15,31 @@ export class FooterService {
     private cultureService: CultureService,
     private httpHandlerService: HttpHandlerService,
     private configService: ConfigService,
+    private strapiPopulationService: StrapiPopulationService,
   ) {
-    this.cmsCommonApi =
+    const footerConfigInstance: FooterConfig = {
+      brand_logo: { src: '', alt: '' },
+      newsletter: {
+        title: '',
+        input: { type: 'text', placeholder: '', value: '' },
+        button: { label: '', type: 'button', ariaLabel: '' },
+      },
+      socialmedia: [
+        {
+          link: { href: '', label: '' },
+          img: { src: '', alt: '' },
+        },
+      ],
+      copyright: { title: '', img: { src: '', alt: '' } },
+    };
+    console.log(footerConfigInstance);
+    console.log(
+      this.strapiPopulationService.createQsObject(footerConfigInstance),
+    );
+    /* this.cmsCommonApi =
       this.configService.get<string>('CMS', 'default-CMS') +
-      'api/common?populate=*';
-    console.log(this.cmsCommonApi);
+      this.strapiPopulationService.createQsObject(footerConfigInstance);
+    console.log(this.cmsCommonApi); */
   }
   getFooterConfig(): FooterConfig {
     if (this.cultureService.getCurrentCulture() === 'es') {
