@@ -6,9 +6,8 @@ import {
 } from '../../../shared/entities/entitys.interface';
 
 interface AlertsConfig {
-  main_text: string;
-  label: string;
   link: LinkConfig;
+  main_text: string;
 }
 
 interface SearchConfig {
@@ -18,6 +17,6 @@ interface SearchConfig {
 
 export interface HeaderConfig {
   brand_logo: ImgsConfig;
-  search: SearchConfig;
-  alert: AlertsConfig[];
+  search_nav: SearchConfig;
+  alerts: AlertsConfig[];
 }

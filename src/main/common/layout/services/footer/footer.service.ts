@@ -1,65 +1,82 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { catchError, tap } from 'rxjs';
+import { Observable, catchError, map } from 'rxjs';
 import { HttpHandlerService } from 'src/main/core/helpers/http-handler/http-handler.service';
+import { StrapiPopulationService } from 'src/main/core/helpers/strapi-population/strapi-population.service';
 import { CultureService } from 'src/main/core/services/culture/culture.service';
 import { HttpsRequests } from 'src/main/core/types/enums/request.core.enum';
-import { footerDataEn, footerDataEs } from '../../data/footer/footer.data';
+import { strapiResponse } from 'src/main/shared/entities/strapi.actions';
 import { FooterConfig } from '../../entities/footer.entity';
-import { StrapiPopulationService } from 'src/main/core/helpers/strapi-population/strapi-population.service';
+import { FooterKey } from '../../keys/footer/footer.key';
 
 @Injectable()
 export class FooterService {
-  private readonly cmsCommonApi: string;
+  private readonly cmsCommon: string;
+  private readonly apiFooter: string;
   constructor(
     private cultureService: CultureService,
     private httpHandlerService: HttpHandlerService,
     private configService: ConfigService,
     private strapiPopulationService: StrapiPopulationService,
   ) {
-    const footerConfigInstance: FooterConfig = {
-      brand_logo: { src: '', alt: '' },
-      newsletter: {
-        title: '',
-        input: { type: 'text', placeholder: '', value: '' },
-        button: { label: '', type: 'button', ariaLabel: '' },
-      },
-      socialmedia: [
-        {
-          link: { href: '', label: '' },
-          img: { src: '', alt: '' },
-        },
-      ],
-      copyright: { title: '', img: { src: '', alt: '' } },
-    };
-    console.log(footerConfigInstance);
-    console.log(
-      this.strapiPopulationService.createQsObject(footerConfigInstance),
+    this.cmsCommon = this.configService.get<string>('CMS', 'default-cms');
+    this.apiFooter = this.configService.get<string>(
+      'COMMON_FOOTER',
+      'default-common-footer',
     );
-    /* this.cmsCommonApi =
-      this.configService.get<string>('CMS', 'default-CMS') +
-      this.strapiPopulationService.createQsObject(footerConfigInstance);
-    console.log(this.cmsCommonApi); */
   }
-  getFooterConfig(): FooterConfig {
-    if (this.cultureService.getCurrentCulture() === 'es') {
-      return footerDataEs;
-    } else {
-      return footerDataEn;
-    }
+  private transformResponse(response: strapiResponse): FooterConfig {
+    const attributes: FooterConfig = response.data.attributes;
+    const transformedFooterConfig: FooterConfig = {
+      brand_logo: attributes.brand_logo.data.attributes,
+      newsletter: {
+        title: attributes.newsletter.title,
+        input: {
+          type: attributes.newsletter.input.type,
+          placeholder: attributes.newsletter.input.placeholder,
+          label: attributes.newsletter.input.label,
+        },
+        button: {
+          label: attributes.newsletter.button.label,
+          type: attributes.newsletter.button.type,
+          button_class: attributes.newsletter.button.button_class,
+        },
+      },
+      socialmedia: attributes.socialmedia.map((socialMediaItem) => {
+        return {
+          link: {
+            href: socialMediaItem.link.href,
+            label: socialMediaItem.link.label,
+          },
+          icon: socialMediaItem.icon,
+        };
+      }),
+      copyrigth: {
+        year: attributes.copyrigth.year,
+        company_name: attributes.copyrigth.company_name,
+        rights: attributes.copyrigth.rights,
+        coorp_logo: attributes.copyrigth.coorp_logo.data.attributes,
+      },
+    };
+    return transformedFooterConfig;
   }
-  getStrapiFooter() {
-    console.log('Before making the request');
+  private callStrapiFooter(query: string): Observable<FooterConfig> {
     return this.httpHandlerService
-      .request(HttpsRequests.GET, this.cmsCommonApi)
+      .request(HttpsRequests.GET, this.cmsCommon + query)
       .pipe(
-        tap((response) => {
-          return response;
-        }),
+        map((response: strapiResponse) => this.transformResponse(response)),
         catchError((error) => {
           console.error('Error fetching Strapi data:', error);
           throw error;
         }),
       );
+  }
+  public getFooterConfig(): Observable<FooterConfig> {
+    const queryCall: string = this.strapiPopulationService.createQsObject(
+      this.apiFooter,
+      this.cultureService.getCurrentCulture(),
+      FooterKey,
+    );
+    return this.callStrapiFooter(queryCall);
   }
 }

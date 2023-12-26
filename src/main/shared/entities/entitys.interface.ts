@@ -19,6 +19,5 @@ export interface InputConfig {
 export interface ButtonGeneralConfig {
   label: string;
   type: 'button' | 'submit' | 'reset';
-  button_id: string;
   button_class: 'primary' | 'secundary' | 'page';
 }

@@ -7,12 +7,14 @@ import {
 
 interface SocialMediaConfig {
   link: LinkConfig;
-  image: ImgsConfig;
+  icon: string;
 }
 
 interface CopyrightConfig {
-  title: string;
-  img: ImgsConfig;
+  year: string;
+  company_name: string;
+  rights: string;
+  coorp_logo: ImgsConfig;
 }
 
 interface NewsLetterConfig {
@@ -25,5 +27,5 @@ export interface FooterConfig {
   brand_logo: ImgsConfig;
   newsletter: NewsLetterConfig;
   socialmedia: SocialMediaConfig[];
-  copyright: CopyrightConfig;
+  copyrigth: CopyrightConfig;
 }
