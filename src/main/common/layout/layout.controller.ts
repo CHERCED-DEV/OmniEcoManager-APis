@@ -22,10 +22,12 @@ export class LayoutController {
   }
   @Get()
   getLayout() {
-    const layout: LayoutConfig = {
-      header: this.headerData,
-      footer: this.footerData,
+    const res: LayoutConfig = {
+      layout: {
+        header: this.headerData,
+        footer: this.footerData,
+      },
     };
-    return layout;
+    return res;
   }
 }

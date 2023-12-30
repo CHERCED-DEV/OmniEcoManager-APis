@@ -6,4 +6,4 @@ import { LayoutModule } from './layout/layout.module';
   controllers: [],
   providers: [],
 })
-export class StaticModule {}
+export class CommonDataModule {}
