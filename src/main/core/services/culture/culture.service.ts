@@ -1,14 +1,19 @@
 import { Injectable } from '@nestjs/common';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable()
 export class CultureService {
-  private currentCulture: string = 'en';
+  private currentLangSubject = new BehaviorSubject<string>('en');
 
   setCulture(culture: string) {
-    this.currentCulture = culture;
+    this.currentLangSubject.next(culture);
   }
 
   getCurrentCulture(): string {
-    return this.currentCulture;
+    return this.currentLangSubject.getValue();
+  }
+
+  cultureListener(): Observable<string> {
+    return this.currentLangSubject.asObservable();
   }
 }

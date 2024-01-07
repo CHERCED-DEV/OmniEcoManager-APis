@@ -7,11 +7,8 @@ export class CultureMiddleware implements NestMiddleware {
   constructor(private cultureService: CultureService) {}
   use(req: Request, res: Response, next: NextFunction) {
     const acceptLanguageHeader = req.headers['accept-language'];
-    const culture =
-      acceptLanguageHeader && acceptLanguageHeader.includes('en') ? 'en' : 'es';
-
+    const culture = acceptLanguageHeader;
     this.cultureService.setCulture(culture);
-
     next();
   }
 }
