@@ -1,4 +1,4 @@
-import { LayoutController } from './layout.controller';
+import { CommonController } from './common.controller';
 import { Module } from '@nestjs/common';
 import { CultureService } from 'src/main/core/services/culture/culture.service';
 import { FooterService } from './services/footer/footer.service';
@@ -9,7 +9,7 @@ import { StrapiPopulationService } from 'src/main/core/helpers/strapi-population
 
 @Module({
   imports: [HttpModule],
-  controllers: [LayoutController],
+  controllers: [CommonController],
   providers: [
     CultureService,
     HttpHandlerService,

@@ -3,10 +3,10 @@ import { FooterService } from './services/footer/footer.service';
 import { HeaderService } from './services/header/header.service';
 import { FooterConfig } from './entities/footer.entity';
 import { HeaderConfig } from './entities/header.entity';
-import { LayoutConfig } from './entities/layout.entity';
+import { CommonConfig } from './entities/layout.entity';
 
-@Controller('common/layout')
-export class LayoutController {
+@Controller('common')
+export class CommonController {
   private footerData: FooterConfig;
   private headerData: HeaderConfig;
   constructor(
@@ -21,11 +21,13 @@ export class LayoutController {
     });
   }
   @Get()
-  getLayout() {
-    const res: LayoutConfig = {
-      layout: {
-        header: this.headerData,
-        footer: this.footerData,
+  getCommon() {
+    const res: CommonConfig = {
+      common: {
+        layout: {
+          header: this.headerData,
+          footer: this.footerData,
+        },
       },
     };
     return res;
