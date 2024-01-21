@@ -3,7 +3,6 @@ import { ConfigService } from '@nestjs/config';
 import { Observable, catchError, map } from 'rxjs';
 import { HttpHandlerService } from 'src/main/core/helpers/http-handler/http-handler.service';
 import { StrapiPopulationService } from 'src/main/core/helpers/strapi-population/strapi-population.service';
-import { CultureService } from 'src/main/core/services/culture/culture.service';
 import { HttpsRequests } from 'src/main/core/types/enums/request.core.enum';
 import { strapiResponse } from 'src/main/shared/entities/strapi.actions';
 import { FooterConfig } from '../../entities/footer.entity';
@@ -14,7 +13,6 @@ export class FooterService {
   private readonly cmsCommon: string;
   private readonly apiFooter: string;
   constructor(
-    private cultureService: CultureService,
     private httpHandlerService: HttpHandlerService,
     private configService: ConfigService,
     private strapiPopulationService: StrapiPopulationService,
@@ -71,10 +69,11 @@ export class FooterService {
         }),
       );
   }
-  public getFooterConfig(): Observable<FooterConfig> {
+  public getFooterConfig(culture: string): Observable<FooterConfig> {
+    console.log('lof de logs ' + culture);
     const queryCall: string = this.strapiPopulationService.createQsObject(
       this.apiFooter,
-      this.cultureService.getCurrentCulture(),
+      culture,
       FooterKey,
     );
     return this.callStrapiFooter(queryCall);

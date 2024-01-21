@@ -1,11 +1,12 @@
-import { CommonController } from './common.controller';
-import { Module } from '@nestjs/common';
-import { CultureService } from 'src/main/core/services/culture/culture.service';
-import { FooterService } from './services/footer/footer.service';
-import { HeaderService } from './services/header/header.service';
 import { HttpModule } from '@nestjs/axios';
+import { Module } from '@nestjs/common';
 import { HttpHandlerService } from 'src/main/core/helpers/http-handler/http-handler.service';
 import { StrapiPopulationService } from 'src/main/core/helpers/strapi-population/strapi-population.service';
+import { CultureService } from 'src/main/core/services/culture/culture.service';
+import { CommonController } from './common.controller';
+import { CommonService } from './services/common.service';
+import { FooterService } from './services/footer/footer.service';
+import { HeaderService } from './services/header/header.service';
 
 @Module({
   imports: [HttpModule],
@@ -16,6 +17,7 @@ import { StrapiPopulationService } from 'src/main/core/helpers/strapi-population
     StrapiPopulationService,
     FooterService,
     HeaderService,
+    CommonService,
   ],
 })
 export class LayoutModule {}

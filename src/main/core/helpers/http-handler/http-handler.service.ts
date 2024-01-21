@@ -37,7 +37,6 @@ export class HttpHandlerService {
     return this.httpService.request<T>(config).pipe(
       map((response: AxiosResponse<T>) => response.data),
       catchError((error) => {
-        // Handle errors as needed
         throw error;
       }),
     );

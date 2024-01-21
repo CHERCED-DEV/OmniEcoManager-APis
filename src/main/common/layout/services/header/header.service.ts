@@ -3,7 +3,6 @@ import { ConfigService } from '@nestjs/config';
 import { Observable, catchError, map } from 'rxjs';
 import { HttpHandlerService } from 'src/main/core/helpers/http-handler/http-handler.service';
 import { StrapiPopulationService } from 'src/main/core/helpers/strapi-population/strapi-population.service';
-import { CultureService } from 'src/main/core/services/culture/culture.service';
 import { HttpsRequests } from 'src/main/core/types/enums/request.core.enum';
 import { strapiResponse } from 'src/main/shared/entities/strapi.actions';
 import { HeaderConfig } from '../../entities/header.entity';
@@ -14,7 +13,6 @@ export class HeaderService {
   private readonly cmsCommon: string;
   private readonly apiHeader: string;
   constructor(
-    private cultureService: CultureService,
     private httpHandlerService: HttpHandlerService,
     private configService: ConfigService,
     private strapiPopulationService: StrapiPopulationService,
@@ -64,10 +62,10 @@ export class HeaderService {
         }),
       );
   }
-  public getHeaderConfig(): Observable<HeaderConfig> {
+  public getHeaderConfig(culture: string): Observable<HeaderConfig> {
     const queryCall: string = this.strapiPopulationService.createQsObject(
       this.apiHeader,
-      this.cultureService.getCurrentCulture(),
+      culture,
       HeaderKey,
     );
     return this.callStrapiHeader(queryCall);
