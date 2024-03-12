@@ -1,29 +1,27 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { Observable, catchError, map } from 'rxjs';
+import { Observable } from 'rxjs';
+import { BaseService } from 'src/main/core/extensions/base-service/base.service';
 import { HttpHandlerService } from 'src/main/core/helpers/http-handler/http-handler.service';
 import { StrapiPopulationService } from 'src/main/core/helpers/strapi-population/strapi-population.service';
-import { HttpsRequests } from 'src/main/core/types/enums/request.core.enum';
 import { strapiResponse } from 'src/main/shared/entities/strapi.actions';
 import { HeaderConfig } from '../../entities/header.entity';
 import { HeaderKey } from '../../keys/header/header.key';
 
 @Injectable()
-export class HeaderService {
-  private readonly cmsCommon: string;
-  private readonly apiHeader: string;
+export class HeaderService extends BaseService<HeaderConfig> {
   constructor(
-    private httpHandlerService: HttpHandlerService,
-    private configService: ConfigService,
-    private strapiPopulationService: StrapiPopulationService,
+    protected httpHandlerService: HttpHandlerService,
+    protected strapiPopulationService: StrapiPopulationService,
   ) {
-    this.cmsCommon = this.configService.get<string>('CMS', 'default-cms');
-    this.apiHeader = this.configService.get<string>(
+    super(
+      httpHandlerService,
+      strapiPopulationService,
       'COMMON_HEADER',
-      'default-common-header',
+      HeaderKey,
     );
   }
-  private transformResponse(response: strapiResponse): HeaderConfig {
+
+  protected transformResponse(response: strapiResponse): HeaderConfig {
     const attributes: HeaderConfig = response.data.attributes;
     const transformedHeaderConfig: HeaderConfig = {
       brand_logo: attributes.brand_logo.data.attributes,
@@ -51,23 +49,9 @@ export class HeaderService {
     };
     return transformedHeaderConfig;
   }
-  private callStrapiHeader(query: string): Observable<HeaderConfig> {
-    return this.httpHandlerService
-      .request(HttpsRequests.GET, this.cmsCommon + query)
-      .pipe(
-        map((response: strapiResponse) => this.transformResponse(response)),
-        catchError((error) => {
-          console.error('Error fetching Strapi data:', error);
-          throw error;
-        }),
-      );
-  }
+
   public getHeaderConfig(culture: string): Observable<HeaderConfig> {
-    const queryCall: string = this.strapiPopulationService.createQsObject(
-      this.apiHeader,
-      culture,
-      HeaderKey,
-    );
-    return this.callStrapiHeader(queryCall);
+    const headerData: Observable<HeaderConfig> = this.getConfig(culture);
+    return headerData;
   }
 }

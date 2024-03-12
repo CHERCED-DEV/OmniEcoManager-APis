@@ -3,7 +3,7 @@ import {
   ButtonGeneralConfig,
   InputConfig,
   LinkConfig,
-} from '../../../shared/entities/entitys.interface';
+} from '../../../../shared/entities/entitys.interface';
 
 interface AlertsConfig {
   link: LinkConfig;

@@ -1,29 +1,27 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { Observable, catchError, map } from 'rxjs';
+import { Observable } from 'rxjs';
+import { BaseService } from 'src/main/core/extensions/base-service/base.service';
 import { HttpHandlerService } from 'src/main/core/helpers/http-handler/http-handler.service';
 import { StrapiPopulationService } from 'src/main/core/helpers/strapi-population/strapi-population.service';
-import { HttpsRequests } from 'src/main/core/types/enums/request.core.enum';
 import { strapiResponse } from 'src/main/shared/entities/strapi.actions';
 import { FooterConfig } from '../../entities/footer.entity';
 import { FooterKey } from '../../keys/footer/footer.key';
 
 @Injectable()
-export class FooterService {
-  private readonly cmsCommon: string;
-  private readonly apiFooter: string;
+export class FooterService extends BaseService<FooterConfig> {
   constructor(
-    private httpHandlerService: HttpHandlerService,
-    private configService: ConfigService,
-    private strapiPopulationService: StrapiPopulationService,
+    protected httpHandlerService: HttpHandlerService,
+    protected strapiPopulationService: StrapiPopulationService,
   ) {
-    this.cmsCommon = this.configService.get<string>('CMS', 'default-cms');
-    this.apiFooter = this.configService.get<string>(
+    super(
+      httpHandlerService,
+      strapiPopulationService,
       'COMMON_FOOTER',
-      'default-common-footer',
+      FooterKey,
     );
   }
-  private transformResponse(response: strapiResponse): FooterConfig {
+
+  protected transformResponse(response: strapiResponse): FooterConfig {
     const attributes: FooterConfig = response.data.attributes;
     const transformedFooterConfig: FooterConfig = {
       brand_logo: attributes.brand_logo.data.attributes,
@@ -58,24 +56,9 @@ export class FooterService {
     };
     return transformedFooterConfig;
   }
-  private callStrapiFooter(query: string): Observable<FooterConfig> {
-    return this.httpHandlerService
-      .request(HttpsRequests.GET, this.cmsCommon + query)
-      .pipe(
-        map((response: strapiResponse) => this.transformResponse(response)),
-        catchError((error) => {
-          console.error('Error fetching Strapi data:', error);
-          throw error;
-        }),
-      );
-  }
+
   public getFooterConfig(culture: string): Observable<FooterConfig> {
-    console.log('lof de logs ' + culture);
-    const queryCall: string = this.strapiPopulationService.createQsObject(
-      this.apiFooter,
-      culture,
-      FooterKey,
-    );
-    return this.callStrapiFooter(queryCall);
+    const footerData: Observable<FooterConfig> = this.getConfig(culture);
+    return footerData;
   }
 }

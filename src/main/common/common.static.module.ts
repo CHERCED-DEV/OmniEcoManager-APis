@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { LayoutModule } from './layout/layout.module';
+import { LayoutModule } from './components/layout/layout.module';
 
 @Module({
   imports: [LayoutModule],

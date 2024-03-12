@@ -4,7 +4,6 @@ import { HttpHandlerService } from 'src/main/core/helpers/http-handler/http-hand
 import { StrapiPopulationService } from 'src/main/core/helpers/strapi-population/strapi-population.service';
 import { CultureService } from 'src/main/core/services/culture/culture.service';
 import { CommonController } from './common.controller';
-import { CommonService } from './services/common.service';
 import { FooterService } from './services/footer/footer.service';
 import { HeaderService } from './services/header/header.service';
 
@@ -17,7 +16,6 @@ import { HeaderService } from './services/header/header.service';
     StrapiPopulationService,
     FooterService,
     HeaderService,
-    CommonService,
   ],
 })
 export class LayoutModule {}

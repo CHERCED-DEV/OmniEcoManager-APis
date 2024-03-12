@@ -25,7 +25,6 @@ export class CultureInterceptor implements NestInterceptor {
       await this.cultureService.setCulture(acceptLanguageHeader);
 
       const currentCulture = this.cultureService.getCurrentCulture();
-      console.log('Current Culture:', currentCulture);
 
       if (currentCulture) {
         return next.handle();

@@ -5,6 +5,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CommonDataModule } from './main/common/common.static.module';
+import { FileManagerService } from './main/core/helpers/file-manager/file-manager.service';
 import { HttpHandlerService } from './main/core/helpers/http-handler/http-handler.service';
 import { StrapiPopulationService } from './main/core/helpers/strapi-population/strapi-population.service';
 import { CultureInterceptor } from './main/core/interceptors/culture/culture.interceptor';
@@ -27,8 +28,9 @@ import { CultureService } from './main/core/services/culture/culture.service';
     },
     AppService,
     HttpHandlerService,
-    CultureService,
+    FileManagerService,
     StrapiPopulationService,
+    CultureService,
   ],
 })
 export class AppModule {}
