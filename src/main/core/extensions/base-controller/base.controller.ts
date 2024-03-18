@@ -1,5 +1,5 @@
 import { Controller } from '@nestjs/common';
-import { switchMap } from 'rxjs';
+import { EMPTY, Observable, switchMap } from 'rxjs';
 import { FileManagerService } from '../../helpers/file-manager/file-manager.service';
 import { CultureService } from '../../services/culture/culture.service';
 import {
@@ -27,16 +27,19 @@ export abstract class BaseController<T> {
         switchMap((culture) => {
           if (culture !== null && culture !== undefined && culture !== '') {
             return this.fetchData(culture);
+          } else {
+            return EMPTY;
           }
         }),
       )
-      .subscribe({
-        next: callback,
-        error: (error) => {
-          console.error('Error fetching data:', error);
-          // Handle the error as needed
+      .subscribe(
+        (data: T) => {
+          callback(data);
         },
-      });
+        (error) => {
+          console.error('Error fetching data:', error);
+        },
+      );
   }
 
   /**
@@ -44,7 +47,7 @@ export abstract class BaseController<T> {
    * @param culture The culture for which data should be fetched.
    * @returns A promise that resolves to the fetched data.
    */
-  protected abstract fetchData(culture: string | null): Promise<T>;
+  protected abstract fetchData(culture: string | null): Observable<T>;
 
   /**
    * Method to save data by culture.

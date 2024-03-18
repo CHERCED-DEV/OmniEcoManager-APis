@@ -6,6 +6,7 @@ import { CultureService } from 'src/main/core/services/culture/culture.service';
 import { CommonController } from './common.controller';
 import { FooterService } from './services/footer/footer.service';
 import { HeaderService } from './services/header/header.service';
+import { FileManagerService } from 'src/main/core/helpers/file-manager/file-manager.service';
 
 @Module({
   imports: [HttpModule],
@@ -13,6 +14,7 @@ import { HeaderService } from './services/header/header.service';
   providers: [
     CultureService,
     HttpHandlerService,
+    FileManagerService,
     StrapiPopulationService,
     FooterService,
     HeaderService,

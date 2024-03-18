@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { HttpHandlerService } from '../../helpers/http-handler/http-handler.service';
 import { StrapiPopulationService } from '../../helpers/strapi-population/strapi-population.service';
 import { strapiResponse } from 'src/main/shared/entities/strapi.actions';
@@ -7,8 +7,8 @@ import { HttpsRequests } from '../../types/enums/request.core.enum';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
-export abstract class BaseService<T> {
-  private readonly cmsCommon: string;
+export abstract class BaseService<T> implements OnModuleInit {
+  private cmsCommon: string;
   @Inject(ConfigService)
   private readonly configService: ConfigService;
 
@@ -17,15 +17,18 @@ export abstract class BaseService<T> {
     protected strapiPopulationService: StrapiPopulationService,
     private apiPath: string,
     private entityKey: string[],
-  ) {
+  ) {}
+
+  onModuleInit() {
     this.cmsCommon = this.configService.get<string>('CMS', 'default-cms');
+    this.apiPath = this.configService.get<string>(this.apiPath);
   }
 
   protected abstract transformResponse(response: strapiResponse): T;
 
   protected callStrapi(query: string): Observable<T> {
     return this.httpHandlerService
-      .request(HttpsRequests.GET, this.cmsCommon, query)
+      .request(HttpsRequests.GET, this.cmsCommon + query)
       .pipe(
         map((response: strapiResponse) => this.transformResponse(response)),
         catchError((error) => {
