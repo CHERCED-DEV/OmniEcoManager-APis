@@ -1,5 +1,5 @@
 import { Controller, Get, OnModuleInit } from '@nestjs/common';
-import { Observable, forkJoin, lastValueFrom } from 'rxjs';
+import { Observable, from } from 'rxjs';
 import { BaseController } from 'src/main/core/extensions/base-controller/base.controller';
 import { FileManagerService } from 'src/main/core/helpers/file-manager/file-manager.service';
 import { CultureService } from 'src/main/core/services/culture/culture.service';
@@ -16,7 +16,8 @@ import { HeaderService } from './services/header/header.service';
 @Controller('common')
 export class CommonController
   extends BaseController<CommonConfig>
-  implements OnModuleInit {
+  implements OnModuleInit
+{
   private footerData: FooterConfig;
   private headerData: HeaderConfig;
   constructor(
@@ -41,38 +42,41 @@ export class CommonController
   }
 
   protected fetchData(culture: string): Observable<CommonConfig> {
-    return new Observable((observer) => {
-      forkJoin([
-        this.footerService.getFooterConfig(culture),
-        this.headerService.getHeaderConfig(culture),
-      ]).subscribe(
-        ([footerData, headerData]) => {
-          observer.next({
+    return from(
+      new Promise<CommonConfig>(async (resolve, reject) => {
+        try {
+          const [footerData, headerData] = await Promise.all([
+            this.footerService.getFooterConfig(culture),
+            this.headerService.getHeaderConfig(culture),
+          ]);
+          const commonConfig: CommonConfig = {
             common: {
               layout: {
                 header: headerData,
                 footer: footerData,
               },
             },
-          });
-          observer.complete();
-        },
-        (error) => {
-          observer.error(error);
-        },
-      );
-    });
+          };
+          resolve(commonConfig);
+        } catch (error) {
+          console.error('Error fetching data:', error);
+          reject(error);
+        }
+      }),
+    );
   }
 
   @Get()
   getCommon(): CommonConfig {
-    return {
-      common: {
-        layout: {
-          header: this.headerData,
-          footer: this.footerData,
+    if (this.dataInitialized) {
+      return {
+        common: {
+          layout: {
+            header: this.headerData,
+            footer: this.footerData,
+          },
         },
-      },
-    };
+      };
+    }
   }
 }

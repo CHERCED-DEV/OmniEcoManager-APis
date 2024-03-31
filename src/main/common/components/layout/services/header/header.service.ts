@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { Observable } from 'rxjs';
 import { BaseService } from 'src/main/core/extensions/base-service/base.service';
 import { HttpHandlerService } from 'src/main/core/helpers/http-handler/http-handler.service';
 import { StrapiPopulationService } from 'src/main/core/helpers/strapi-population/strapi-population.service';
@@ -50,8 +49,14 @@ export class HeaderService extends BaseService<HeaderConfig> {
     return transformedHeaderConfig;
   }
 
-  public getHeaderConfig(culture: string): Observable<HeaderConfig> {
-    const headerData: Observable<HeaderConfig> = this.getConfig(culture);
-    return headerData;
+  public async getHeaderConfig(culture: string): Promise<HeaderConfig> {
+    try {
+      const headerData: HeaderConfig =
+        await this.getConfig(culture).toPromise();
+      return headerData;
+    } catch (error) {
+      console.error('Error fetching header config:', error);
+      throw error;
+    }
   }
 }

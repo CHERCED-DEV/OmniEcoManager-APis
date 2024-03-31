@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { Observable } from 'rxjs';
 import { BaseService } from 'src/main/core/extensions/base-service/base.service';
 import { HttpHandlerService } from 'src/main/core/helpers/http-handler/http-handler.service';
 import { StrapiPopulationService } from 'src/main/core/helpers/strapi-population/strapi-population.service';
@@ -57,8 +56,14 @@ export class FooterService extends BaseService<FooterConfig> {
     return transformedFooterConfig;
   }
 
-  public getFooterConfig(culture: string): Observable<FooterConfig> {
-    const footerData: Observable<FooterConfig> = this.getConfig(culture);
-    return footerData;
+  public async getFooterConfig(culture: string): Promise<FooterConfig> {
+    try {
+      const footerData: FooterConfig =
+        await this.getConfig(culture).toPromise();
+      return footerData;
+    } catch (error) {
+      console.error('Error fetching header config:', error);
+      throw error;
+    }
   }
 }

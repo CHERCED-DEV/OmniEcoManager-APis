@@ -19,7 +19,6 @@ export class CultureInterceptor implements NestInterceptor {
     const response = context.switchToHttp().getResponse();
 
     const acceptLanguageHeader: string = request.headers['accept-language'];
-    console.log('Accept-Language Header:', acceptLanguageHeader);
 
     try {
       await this.cultureService.setCulture(acceptLanguageHeader);

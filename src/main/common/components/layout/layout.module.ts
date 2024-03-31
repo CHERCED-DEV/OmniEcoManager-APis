@@ -7,11 +7,13 @@ import { CommonController } from './common.controller';
 import { FooterService } from './services/footer/footer.service';
 import { HeaderService } from './services/header/header.service';
 import { FileManagerService } from 'src/main/core/helpers/file-manager/file-manager.service';
+import { AuthService } from 'src/main/core/services/auth/auth.service';
 
 @Module({
   imports: [HttpModule],
   controllers: [CommonController],
   providers: [
+    AuthService,
     CultureService,
     HttpHandlerService,
     FileManagerService,
