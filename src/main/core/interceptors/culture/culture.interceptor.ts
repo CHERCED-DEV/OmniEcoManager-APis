@@ -11,20 +11,15 @@ import { CultureService } from '../../services/culture/culture.service';
 export class CultureInterceptor implements NestInterceptor {
   constructor(private cultureService: CultureService) {}
 
-  async intercept(
-    context: ExecutionContext,
-    next: CallHandler,
-  ): Promise<Observable<any>> {
+  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const request = context.switchToHttp().getRequest();
     const response = context.switchToHttp().getResponse();
 
     const acceptLanguageHeader: string = request.headers['accept-language'];
 
     try {
-      await this.cultureService.setCulture(acceptLanguageHeader);
-
+      this.cultureService.setCulture(acceptLanguageHeader);
       const currentCulture = this.cultureService.getCurrentCulture();
-
       if (currentCulture) {
         return next.handle();
       } else {

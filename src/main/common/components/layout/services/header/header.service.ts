@@ -1,23 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { BaseService } from 'src/main/core/extensions/base-service/base.service';
-import { HttpHandlerService } from 'src/main/core/helpers/http-handler/http-handler.service';
-import { StrapiPopulationService } from 'src/main/core/helpers/strapi-population/strapi-population.service';
 import { strapiResponse } from 'src/main/shared/entities/strapi.actions';
 import { HeaderConfig } from '../../entities/header.entity';
 import { HeaderKey } from '../../keys/header/header.key';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class HeaderService extends BaseService<HeaderConfig> {
-  constructor(
-    protected httpHandlerService: HttpHandlerService,
-    protected strapiPopulationService: StrapiPopulationService,
-  ) {
-    super(
-      httpHandlerService,
-      strapiPopulationService,
-      'COMMON_HEADER',
-      HeaderKey,
-    );
+  constructor() {
+    super('COMMON_HEADER', HeaderKey);
   }
 
   protected transformResponse(response: strapiResponse): HeaderConfig {
@@ -51,8 +42,9 @@ export class HeaderService extends BaseService<HeaderConfig> {
 
   public async getHeaderConfig(culture: string): Promise<HeaderConfig> {
     try {
-      const headerData: HeaderConfig =
-        await this.getConfig(culture).toPromise();
+      const headerData: HeaderConfig = await firstValueFrom(
+        this.getConfig(culture),
+      );
       return headerData;
     } catch (error) {
       console.error('Error fetching header config:', error);

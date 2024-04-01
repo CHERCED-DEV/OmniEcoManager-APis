@@ -34,9 +34,9 @@ function configureGlobalInterceptors(app: INestApplication) {
   const authService = app.get(AuthService);
   const cultureService = app.get(CultureService);
   app.useGlobalInterceptors(
+    new AuthInterceptor(authService),
     new ErrorInterceptor(),
     new CultureInterceptor(cultureService),
-    new AuthInterceptor(authService),
   );
 }
 

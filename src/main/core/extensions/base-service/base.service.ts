@@ -8,12 +8,17 @@ import { StrapiPopulationService } from '../../helpers/strapi-population/strapi-
 @Injectable()
 export abstract class BaseService<T> implements OnModuleInit {
   private cmsCommon: string;
+
   @Inject(ConfigService)
   private readonly configService: ConfigService;
 
-  protected constructor(
-    protected httpHandlerService: HttpHandlerService,
-    protected strapiPopulationService: StrapiPopulationService,
+  @Inject(HttpHandlerService)
+  protected httpHandlerService: HttpHandlerService;
+
+  @Inject(StrapiPopulationService)
+  protected strapiPopulationService: StrapiPopulationService;
+
+  constructor(
     private apiPath: string,
     private entityKey: string[],
   ) {}

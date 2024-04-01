@@ -1,5 +1,5 @@
-import { Controller } from '@nestjs/common';
-import { Observable } from 'rxjs';
+import { Controller, Inject } from '@nestjs/common';
+import { EMPTY, Observable, catchError, switchMap, tap } from 'rxjs';
 import { FileManagerService } from '../../helpers/file-manager/file-manager.service';
 import { CultureService } from '../../services/culture/culture.service';
 import {
@@ -10,33 +10,38 @@ import {
 @Controller()
 export abstract class BaseController<T> {
   public dataInitialized: boolean = false;
+
+  @Inject(CultureService)
+  protected cultureService: CultureService;
+
+  @Inject(FileManagerService)
+  protected fileManagerService: FileManagerService;
+
   protected constructor(
-    protected cultureService: CultureService,
-    protected fileManagerService: FileManagerService,
     private backupCoreFolder: FileManagerFolder,
     private backupCoreDomain: FileManagerDomain,
   ) {}
 
   /**
    * Method to subscribe to the culture service and execute the callback when there is a culture change.
-   * @param callback The callback to execute when there is a culture change.
    */
-  protected async onInitMethod(callback: (data: T) => void): Promise<void> {
-    this.cultureService.cultureListener().subscribe(
-      async (culture) => {
+  protected onInitMethod(): Observable<T> {
+    return this.cultureService.cultureListener().pipe(
+      switchMap((culture) => {
         if (culture !== null && culture !== undefined && culture !== '') {
-          try {
-            const data = await this.fetchData(culture).toPromise();
-            this.dataInitialized = true;
-            callback(data);
-          } catch (error) {
-            console.error('Error fetching data:', error);
-          }
+          return this.fetchData(culture).pipe(
+            tap(() => {
+              this.dataInitialized = true;
+            }),
+            catchError((error) => {
+              console.error('Error fetching data:', error);
+              throw error;
+            }),
+          );
+        } else {
+          return EMPTY;
         }
-      },
-      (error) => {
-        console.error('Error listening to culture changes:', error);
-      },
+      }),
     );
   }
 

@@ -1,23 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { BaseService } from 'src/main/core/extensions/base-service/base.service';
-import { HttpHandlerService } from 'src/main/core/helpers/http-handler/http-handler.service';
-import { StrapiPopulationService } from 'src/main/core/helpers/strapi-population/strapi-population.service';
 import { strapiResponse } from 'src/main/shared/entities/strapi.actions';
 import { FooterConfig } from '../../entities/footer.entity';
 import { FooterKey } from '../../keys/footer/footer.key';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class FooterService extends BaseService<FooterConfig> {
-  constructor(
-    protected httpHandlerService: HttpHandlerService,
-    protected strapiPopulationService: StrapiPopulationService,
-  ) {
-    super(
-      httpHandlerService,
-      strapiPopulationService,
-      'COMMON_FOOTER',
-      FooterKey,
-    );
+  constructor() {
+    super('COMMON_FOOTER', FooterKey);
   }
 
   protected transformResponse(response: strapiResponse): FooterConfig {
@@ -58,8 +49,9 @@ export class FooterService extends BaseService<FooterConfig> {
 
   public async getFooterConfig(culture: string): Promise<FooterConfig> {
     try {
-      const footerData: FooterConfig =
-        await this.getConfig(culture).toPromise();
+      const footerData: FooterConfig = await firstValueFrom(
+        this.getConfig(culture),
+      );
       return footerData;
     } catch (error) {
       console.error('Error fetching header config:', error);
