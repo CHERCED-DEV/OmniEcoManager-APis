@@ -36,6 +36,7 @@ export class CommonController extends BaseController<CommonConfig> {
               },
             },
           };
+          await this.saveDataByCulture(commonConfig, culture);
           resolve(commonConfig);
         } catch (error) {
           console.error('Error fetching data:', error);

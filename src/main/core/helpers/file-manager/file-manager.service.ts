@@ -12,9 +12,9 @@ export class FileManagerService {
     data: any,
     dataFolderPath: FileManagerDomain,
     fileName: FileManagerFolder,
-    format: string = '.json',
+    culture: string,
   ): Promise<void> {
-    const filePath = `${dataFolderPath}/${fileName}${format}`;
+    const filePath = `${dataFolderPath}/${fileName}.${culture}.json`;
     try {
       await promisify(fs.mkdir)(dataFolderPath, { recursive: true });
       await promisify(fs.writeFile)(filePath, JSON.stringify(data));
@@ -26,8 +26,9 @@ export class FileManagerService {
   async getDataFromFile(
     dataFolderPath: FileManagerDomain,
     fileName: FileManagerFolder,
+    culture: string,
   ): Promise<any | null> {
-    const filePath = `${dataFolderPath}/${fileName}`;
+    const filePath = `${dataFolderPath}/${fileName}.${culture}.json`;
     try {
       if (fs.existsSync(filePath)) {
         const rawData = await promisify(fs.readFile)(filePath, 'utf8');
