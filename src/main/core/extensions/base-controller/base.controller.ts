@@ -1,4 +1,4 @@
-import { Controller, Inject } from '@nestjs/common';
+import { Body, Controller, Inject, Post } from '@nestjs/common';
 import { EMPTY, Observable, catchError, from, of, switchMap } from 'rxjs';
 import { FileManagerService } from '../../helpers/file-manager/file-manager.service';
 import { CultureService } from '../../services/culture/culture.service';
@@ -19,6 +19,12 @@ export abstract class BaseController<T> {
     private backupCoreFolder: FileManagerFolder,
     private backupCoreDomain: FileManagerDomain,
   ) {}
+
+  @Post('strapi')
+  async handleStrapiWebhook(@Body() data: any) {
+    console.log('Received Strapi Webhook:', data);
+    await this.fileManagerService.deleteFolderRecursive(this.backupCoreFolder);
+  }
 
   /**
    * Method to subscribe to the culture service and execute the callback when there is a culture change.
@@ -60,11 +66,14 @@ export abstract class BaseController<T> {
    * @param data The data to save.
    * @param culture The culture for which data should be saved.
    */
-  async saveBackUpDataByCulture(data: any, culture: string): Promise<void> {
+  protected async saveBackUpDataByCulture(
+    data: any,
+    culture: string,
+  ): Promise<void> {
     await this.fileManagerService.saveDataToFile(
       data,
-      this.backupCoreDomain,
       this.backupCoreFolder,
+      this.backupCoreDomain,
       culture,
     );
   }
@@ -73,13 +82,13 @@ export abstract class BaseController<T> {
    * Asynchronously retrieves backup data for a specific @culture and returns it as an Observable.
    * If no backup data is found or an error occurs, it returns an Observable with a null value.
    */
-  getBackUpDataByCulture(culture: string): Observable<T | null> {
+  protected getBackUpDataByCulture(culture: string): Observable<T | null> {
     return from(
       new Promise<T | null>(async (resolve, reject) => {
         try {
           const data: T | null = await this.fileManagerService.getDataFromFile(
-            this.backupCoreDomain,
             this.backupCoreFolder,
+            this.backupCoreDomain,
             culture,
           );
           resolve(data);

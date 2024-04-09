@@ -10,8 +10,8 @@ import {
 export class FileManagerService {
   async saveDataToFile(
     data: any,
-    dataFolderPath: FileManagerDomain,
-    fileName: FileManagerFolder,
+    dataFolderPath: FileManagerFolder,
+    fileName: FileManagerDomain,
     culture: string,
   ): Promise<void> {
     const filePath = `${dataFolderPath}/${fileName}.${culture}.json`;
@@ -31,8 +31,8 @@ export class FileManagerService {
   }
 
   async getDataFromFile(
-    dataFolderPath: FileManagerDomain,
-    fileName: FileManagerFolder,
+    dataFolderPath: FileManagerFolder,
+    fileName: FileManagerDomain,
     culture: string,
   ): Promise<any | null> {
     const filePath = `${dataFolderPath}/${fileName}.${culture}.json`;
@@ -45,6 +45,19 @@ export class FileManagerService {
     } catch (error) {
       throw new Error(`Error reading data from file: ${error.message}`);
     }
+  }
+
+  async deleteFolderRecursive(folderPath: string): Promise<void> {
+    const files = await promisify(fs.readdir)(folderPath);
+    for (const file of files) {
+      const curPath = `${folderPath}/${file}`;
+      if ((await promisify(fs.stat)(curPath)).isDirectory()) {
+        await this.deleteFolderRecursive(curPath);
+      } else {
+        await promisify(fs.unlink)(curPath);
+      }
+    }
+    await promisify(fs.rmdir)(folderPath);
   }
 
   private areDataEqual(data1: any, data2: any): boolean {

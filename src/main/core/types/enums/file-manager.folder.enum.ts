@@ -1,6 +1,6 @@
 export enum FileManagerDomain {
-  COMMON = 'src/main/common/data',
+  COMMON = 'common',
 }
 export enum FileManagerFolder {
-  COMMON = 'common',
+  COMMON = 'src/main/common/data',
 }

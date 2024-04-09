@@ -11,8 +11,6 @@ import { HeaderService } from './services/header/header.service';
 
 @Controller('common')
 export class CommonController extends BaseController<CommonConfig> {
-  private commonData$: Observable<CommonConfig>;
-
   constructor(
     private footerService: FooterService,
     private headerService: HeaderService,
@@ -48,8 +46,12 @@ export class CommonController extends BaseController<CommonConfig> {
 
   @Get()
   async getCommon(): Promise<CommonConfig> {
-    this.commonData$ = this.onInitMethod();
-    const commonData = await firstValueFrom(this.commonData$);
-    return commonData;
+    try {
+      const commonData = await firstValueFrom(this.onInitMethod());
+      return commonData;
+    } catch (error) {
+      console.error('Error fetching common data:', error);
+      throw error;
+    }
   }
 }
